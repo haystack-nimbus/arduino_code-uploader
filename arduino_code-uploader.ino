@@ -33,6 +33,7 @@ To Do List
 #include <ros/time.h>
 #include <sensor_msgs/Range.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/String.h>
 
 // PINMAPS
 #define UV_LAMP_PIN                         (A0)
@@ -89,6 +90,9 @@ To Do List
 
 #define UV_LAMP_STATUS_TOPIC_NAME           ("/uv_lamp_current_status")
 #define UV_LAMP_SET_STATUS_TOPIC_NAME       ("/uv_lamp_set_state")
+#define FIRMWARE_VERSION_TOPIC_NAME         ("/ardunio_firmware_version")
+
+
 
 #define FRONT_LEFT_SONAR_TOPIC_NAME         ("/sonar_front_left")
 #define FRONT_MID_SONAR_TOPIC_NAME          ("/sonar_front_mid")
@@ -106,16 +110,17 @@ To Do List
 #define SONAR_MIN_RANGE                     (0.20) // in meters
 #define SONAR_MAX_RANGE                     (3.0) // in meters
 
-#define LOOP_DELAY                          (100)
+#define LOOP_DELAY                          (1)
 #define CM_TO_M(X)                          (X/100)
 #define FALSE                               (0)
 #define TRUE                                (1)
 #define DEBUG                               (FALSE)
-#define TURN_ON_TIME                        (1 * 1000) // in milliseconds
-
+#define TURN_ON_TIME                        (1000) // in milliseconds
+#define FIRMWARE_VERSION                    ("v2.0.0")
 
 ros::NodeHandle  nodeHandler;
 std_msgs::Bool uvLampStatus_msg;
+std_msgs::String firmwareVersion_msg;
 sensor_msgs::Range Range_msg;
 
 unsigned long range_timer;
@@ -123,19 +128,20 @@ unsigned long prevTime;
 
 void uvLampToggleCallback(const std_msgs::Bool& toggle_msg);
 // Publishers
-ros::Publisher pub_FrontLeftCliff(FRONT_LEFT_CLIFF_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_FrontRightCliff(FRONT_RIGHT_CLIFF_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_RearLeftCliff( REAR_LEFT_CLIFF_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_RearRightCliff(REAR_RIGHT_CLIFF_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_FrontLeftCliff(FRONT_LEFT_CLIFF_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_FrontRightCliff(FRONT_RIGHT_CLIFF_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_RearLeftCliff( REAR_LEFT_CLIFF_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_RearRightCliff(REAR_RIGHT_CLIFF_TOPIC_NAME, &Range_msg);
 
-ros::Publisher pub_UVLampStatus( UV_LAMP_STATUS_TOPIC_NAME, &uvLampStatus_msg);
+//ros::Publisher pub_UVLampStatus( UV_LAMP_STATUS_TOPIC_NAME, &uvLampStatus_msg);
+ros::Publisher pub_FirmwareVersion(FIRMWARE_VERSION_TOPIC_NAME, &firmwareVersion_msg);
 
 ros::Publisher pub_FrontLeftSonar(FRONT_LEFT_SONAR_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_FrontMidSonar(FRONT_MID_SONAR_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_FrontMidSonar(FRONT_MID_SONAR_TOPIC_NAME, &Range_msg);
 ros::Publisher pub_FrontRightSonar(FRONT_RIGHT_SONAR_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_BackRightSonar(BACK_RIGHT_SONAR_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_BackMidSonar(BACK_MID_SONAR_TOPIC_NAME, &Range_msg);
-ros::Publisher pub_BackLeftSonar(BACK_LEFT_SONAR_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_BackRightSonar(BACK_RIGHT_SONAR_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_BackMidSonar(BACK_MID_SONAR_TOPIC_NAME, &Range_msg);
+//ros::Publisher pub_BackLeftSonar(BACK_LEFT_SONAR_TOPIC_NAME, &Range_msg);
 
 // Subscribers
 ros::Subscriber<std_msgs::Bool> sub_UVLampState(UV_LAMP_SET_STATUS_TOPIC_NAME, &uvLampToggleCallback);
@@ -156,7 +162,7 @@ void uvLampToggleCallback(const std_msgs::Bool& toggle_msg)
   prevTime = millis();
   digitalWrite(UV_LAMP_PIN, toggle_msg.data);
   uvLampStatus_msg.data = toggle_msg.data;
-  delay(LOOP_DELAY);
+//  delay(LOOP_DELAY);
 }
 
 /*============================================================================
@@ -227,50 +233,51 @@ Notes   :   n/a
 void setup()
 {
 
-  // Pin Initialization
-  pinMode(FRONT_LEFT_CLIFF_PIN, INPUT);
-  pinMode(FRONT_RIGHT_CLIFF_PIN, INPUT);
-  pinMode(REAR_LEFT_CLIFF_PIN, INPUT);
-  pinMode(REAR_RIGHT_CLIFF_PIN, INPUT);
+//  // Pin Initialization
+//  pinMode(FRONT_LEFT_CLIFF_PIN, INPUT);
+//  pinMode(FRONT_RIGHT_CLIFF_PIN, INPUT);
+//  pinMode(REAR_LEFT_CLIFF_PIN, INPUT);
+//  pinMode(REAR_RIGHT_CLIFF_PIN, INPUT);
 
   pinMode(UV_LAMP_PIN, OUTPUT);
 
   pinMode(FRONT_LEFT_SONAR_TRIG_PIN, OUTPUT);
-  pinMode(FRONT_MID_SONAR_TRIG_PIN, OUTPUT);
+//  pinMode(FRONT_MID_SONAR_TRIG_PIN, OUTPUT);
   pinMode(FRONT_RIGHT_SONAR_TRIG_PIN, OUTPUT);
-  pinMode(BACK_RIGHT_SONAR_TRIG_PIN, OUTPUT);
-  pinMode(BACK_MID_SONAR_TRIG_PIN, OUTPUT);
-  pinMode(BACK_LEFT_SONAR_TRIG_PIN, OUTPUT);
+//  pinMode(BACK_RIGHT_SONAR_TRIG_PIN, OUTPUT);
+//  pinMode(BACK_MID_SONAR_TRIG_PIN, OUTPUT);
+//  pinMode(BACK_LEFT_SONAR_TRIG_PIN, OUTPUT);
  
   pinMode(FRONT_LEFT_SONAR_ECHO_PIN, INPUT);
-  pinMode(FRONT_MID_SONAR_ECHO_PIN, INPUT);
+//  pinMode(FRONT_MID_SONAR_ECHO_PIN, INPUT);
   pinMode(FRONT_RIGHT_SONAR_ECHO_PIN, INPUT);
-  pinMode(BACK_RIGHT_SONAR_ECHO_PIN, INPUT);
-  pinMode(BACK_MID_SONAR_ECHO_PIN, INPUT);
-  pinMode(BACK_LEFT_SONAR_ECHO_PIN, INPUT);
- 
+//  pinMode(BACK_RIGHT_SONAR_ECHO_PIN, INPUT);
+//  pinMode(BACK_MID_SONAR_ECHO_PIN, INPUT);
+//  pinMode(BACK_LEFT_SONAR_ECHO_PIN, INPUT);
+//  nodeHandler.getHardware()->setBaud(115200);
 
   // Init ros node
   nodeHandler.initNode();
-
   // Advertise the topic to be published
-  nodeHandler.advertise(pub_FrontLeftCliff);
-  nodeHandler.advertise(pub_FrontRightCliff);
-  nodeHandler.advertise(pub_RearLeftCliff);
-  nodeHandler.advertise(pub_RearRightCliff);
-  nodeHandler.advertise(pub_UVLampStatus);
+//  nodeHandler.advertise(pub_FrontLeftCliff);
+//  nodeHandler.advertise(pub_FrontRightCliff);
+//  nodeHandler.advertise(pub_RearLeftCliff);
+//  nodeHandler.advertise(pub_RearRightCliff);
+//  nodeHandler.advertise(pub_UVLampStatus);
+    nodeHandler.advertise(pub_FirmwareVersion);
 
   // Initiate subscription
   nodeHandler.subscribe(sub_UVLampState);
 
   nodeHandler.advertise(pub_FrontLeftSonar);
-  nodeHandler.advertise(pub_FrontMidSonar);
+//  nodeHandler.advertise(pub_FrontMidSonar);
   nodeHandler.advertise(pub_FrontRightSonar);
-  nodeHandler.advertise(pub_BackRightSonar);
-  nodeHandler.advertise(pub_BackMidSonar);
-  nodeHandler.advertise(pub_BackLeftSonar);
+//  nodeHandler.advertise(pub_BackRightSonar);
+//  nodeHandler.advertise(pub_BackMidSonar);
+//  nodeHandler.advertise(pub_BackLeftSonar);
 
   uvLampStatus_msg.data = FALSE;
+  firmwareVersion_msg.data = FIRMWARE_VERSION;
 
 }
 
@@ -289,36 +296,36 @@ void loop()
 
   if ( (millis() - range_timer) > LOOP_DELAY){
 
-    // Cliff Default Values
-    Range_msg.field_of_view = CLIFF_FIELD_OF_VIEW;
-    Range_msg.min_range = CLIFF_MIN_RANGE;
-    Range_msg.max_range = CLIFF_MAX_RANGE;
-
-    // Cliff Front Left
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getCliffRange(FRONT_LEFT_CLIFF_PIN);
-    Range_msg.radiation_type = sensor_msgs::Range::INFRARED;
-    Range_msg.header.frame_id = FRONT_LEFT_CLIFF_FRAME_ID;
-    pub_FrontLeftCliff.publish(&Range_msg);
-  
-    // Cliff Front Right
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getCliffRange(FRONT_RIGHT_CLIFF_PIN);
-    Range_msg.header.frame_id = FRONT_RIGHT_CLIFF_FRAME_ID;
-    pub_FrontRightCliff.publish(&Range_msg);
-   
-    // Cliff Rear Left
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getCliffRange(REAR_LEFT_CLIFF_PIN);
-    Range_msg.header.frame_id = REAR_LEFT_CLIFF_FRAME_ID;
-    pub_RearLeftCliff.publish(&Range_msg);
-   
-
-    // Cliff Rear right
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getCliffRange(REAR_RIGHT_CLIFF_PIN);
-    Range_msg.header.frame_id = REAR_RIGHT_CLIFF_FRAME_ID;
-    pub_RearRightCliff.publish(&Range_msg);
+//    // Cliff Default Values
+//    Range_msg.field_of_view = CLIFF_FIELD_OF_VIEW;
+//    Range_msg.min_range = CLIFF_MIN_RANGE;
+//    Range_msg.max_range = CLIFF_MAX_RANGE;
+//
+//    // Cliff Front Left
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getCliffRange(FRONT_LEFT_CLIFF_PIN);
+//    Range_msg.radiation_type = sensor_msgs::Range::INFRARED;
+//    Range_msg.header.frame_id = FRONT_LEFT_CLIFF_FRAME_ID;
+//    pub_FrontLeftCliff.publish(&Range_msg);
+//  
+//    // Cliff Front Right
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getCliffRange(FRONT_RIGHT_CLIFF_PIN);
+//    Range_msg.header.frame_id = FRONT_RIGHT_CLIFF_FRAME_ID;
+//    pub_FrontRightCliff.publish(&Range_msg);
+//   
+//    // Cliff Rear Left
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getCliffRange(REAR_LEFT_CLIFF_PIN);
+//    Range_msg.header.frame_id = REAR_LEFT_CLIFF_FRAME_ID;
+//    pub_RearLeftCliff.publish(&Range_msg);
+//   
+//
+//    // Cliff Rear right
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getCliffRange(REAR_RIGHT_CLIFF_PIN);
+//    Range_msg.header.frame_id = REAR_RIGHT_CLIFF_FRAME_ID;
+//    pub_RearRightCliff.publish(&Range_msg);
 
      // Sonar Default Values
     Range_msg.field_of_view = SONAR_FIELD_OF_VIEW;
@@ -332,12 +339,26 @@ void loop()
     Range_msg.header.frame_id = FRONT_LEFT_SONAR_FRAME_ID;
     pub_FrontLeftSonar.publish(&Range_msg);
 
-    // Sonar Front Mid
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getSonarRange(FRONT_MID_SONAR_TRIG_PIN, FRONT_MID_SONAR_ECHO_PIN);
-    Range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
-    Range_msg.header.frame_id = FRONT_MID_SONAR_FRAME_ID;
-    pub_FrontMidSonar.publish(&Range_msg);
+//    // Sonar Back Right
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getSonarRange(BACK_RIGHT_SONAR_TRIG_PIN, BACK_RIGHT_SONAR_ECHO_PIN);
+//    Range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
+//    Range_msg.header.frame_id = BACK_RIGHT_SONAR_FRAME_ID;
+//    pub_BackRightSonar.publish(&Range_msg);
+//    
+//    // Sonar Front Mid
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getSonarRange(FRONT_MID_SONAR_TRIG_PIN, FRONT_MID_SONAR_ECHO_PIN);
+//    Range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
+//    Range_msg.header.frame_id = FRONT_MID_SONAR_FRAME_ID;
+//    pub_FrontMidSonar.publish(&Range_msg);
+//
+//    // Sonar Back Mid
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getSonarRange(BACK_MID_SONAR_TRIG_PIN, BACK_MID_SONAR_ECHO_PIN);
+//    Range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
+//    Range_msg.header.frame_id = BACK_MID_SONAR_FRAME_ID;
+//    pub_BackMidSonar.publish(&Range_msg);
     
     // Sonar Front Right
     Range_msg.header.stamp = nodeHandler.now();
@@ -346,25 +367,11 @@ void loop()
     Range_msg.header.frame_id = FRONT_RIGHT_SONAR_FRAME_ID;
     pub_FrontRightSonar.publish(&Range_msg);
 
-    // Sonar Back Right
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getSonarRange(BACK_RIGHT_SONAR_TRIG_PIN, BACK_RIGHT_SONAR_ECHO_PIN);
-    Range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
-    Range_msg.header.frame_id = BACK_RIGHT_SONAR_FRAME_ID;
-    pub_BackRightSonar.publish(&Range_msg);
-
-    // Sonar Back Mid
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getSonarRange(BACK_MID_SONAR_TRIG_PIN, BACK_MID_SONAR_ECHO_PIN);
-    Range_msg.radiation_type = sensor_msgs::Range::ULTRASOUND;
-    Range_msg.header.frame_id = BACK_MID_SONAR_FRAME_ID;
-    pub_BackMidSonar.publish(&Range_msg);
-
-    // Sonar Back Left
-    Range_msg.header.stamp = nodeHandler.now();
-    Range_msg.range = getSonarRange(BACK_LEFT_SONAR_TRIG_PIN, BACK_LEFT_SONAR_ECHO_PIN);
-    Range_msg.header.frame_id = BACK_LEFT_SONAR_FRAME_ID;
-    pub_BackLeftSonar.publish(&Range_msg);
+//    // Sonar Back Left
+//    Range_msg.header.stamp = nodeHandler.now();
+//    Range_msg.range = getSonarRange(BACK_LEFT_SONAR_TRIG_PIN, BACK_LEFT_SONAR_ECHO_PIN);
+//    Range_msg.header.frame_id = BACK_LEFT_SONAR_FRAME_ID;
+//    pub_BackLeftSonar.publish(&Range_msg);
 
     
     if ((millis() - prevTime)> TURN_ON_TIME)
@@ -375,7 +382,7 @@ void loop()
     }
 
     // UV Lamp status
-    pub_UVLampStatus.publish(&uvLampStatus_msg);
+    pub_FirmwareVersion.publish(&firmwareVersion_msg);
 
     range_timer =  millis();
   }
