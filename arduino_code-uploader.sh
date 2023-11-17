@@ -28,7 +28,7 @@ arduino-cli lib install "Rosserial Arduino Library@0.7.9"
 
 SKETCH="arduino_code-uploader/arduino_code-uploader.ino"
 
-git clone https://github.com/haystack-nimbus/arduino_code-uploader.git
+#git clone https://github.com/haystack-nimbus/arduino_code-uploader.git
 
 
 BOARD="arduino:avr:uno"  
